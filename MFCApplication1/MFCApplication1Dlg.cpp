@@ -104,6 +104,15 @@ BOOL CMFCApplication1Dlg::OnInitDialog()
 	return FALSE;
 }
 
+void CMFCApplication1Dlg::OnOK()
+{
+}
+
+void CMFCApplication1Dlg::OnCancel()
+{
+	CDialog::OnCancel();
+}
+
 void CMFCApplication1Dlg::OnPaint()
 {
 	if (IsIconic())
@@ -224,15 +233,6 @@ void CMFCApplication1Dlg::OnTimer(UINT_PTR nIDEvent)
 	CDialog::OnTimer(nIDEvent);
 }
 
-void CMFCApplication1Dlg::OnOK()
-{
-}
-
-void CMFCApplication1Dlg::OnCancel()
-{
-	CDialog::OnCancel();
-}
-
 
 void CMFCApplication1Dlg::UpdateDisplay()
 {
@@ -344,6 +344,7 @@ LRESULT CMFCApplication1Dlg::HandleKeyDown(WPARAM wParam)
 
 	return bHandled ? 1 : 0;
 }
+
 
 LRESULT CMFCApplication1Dlg::WindowProc(UINT msg, WPARAM wParam, LPARAM lParam)
 {
