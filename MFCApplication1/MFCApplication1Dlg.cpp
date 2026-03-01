@@ -184,6 +184,7 @@ BEGIN_MESSAGE_MAP(CMFCApplication1Dlg, CDialog)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_WM_TIMER()
+	ON_WM_KEYUP()
 	ON_BN_CLICKED(IDC_BTN0, &CMFCApplication1Dlg::OnBnClickedBtn0)
 	ON_BN_CLICKED(IDC_BTN1, &CMFCApplication1Dlg::OnBnClickedBtn1)
 	ON_BN_CLICKED(IDC_BTN2, &CMFCApplication1Dlg::OnBnClickedBtn2)
@@ -391,6 +392,77 @@ void CMFCApplication1Dlg::OnTimer(UINT_PTR nIDEvent)
 	if (state & 0x8000) { OnBnClickedBtnEq(); }
 
 	CDialog::OnTimer(nIDEvent);
+}
+
+void CMFCApplication1Dlg::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+	BOOL bHandled = FALSE;
+
+	if (nChar >= '0' && nChar <= '9')
+	{
+		CString szDigit;
+		szDigit.Format(_T("%c"), nChar);
+		AppendDigit(szDigit);
+		bHandled = TRUE;
+	}
+	else
+	{
+		switch (nChar)
+		{
+		case VK_ADD:
+			SetOperation(_T("+"));
+			bHandled = TRUE;
+			break;
+		case VK_SUBTRACT:
+		case '-':
+			SetOperation(_T("-"));
+			bHandled = TRUE;
+			break;
+		case VK_MULTIPLY:
+		case '*':
+			SetOperation(_T("*"));
+			bHandled = TRUE;
+			break;
+		case VK_DIVIDE:
+		case '/':
+			SetOperation(_T("/"));
+			bHandled = TRUE;
+			break;
+		case VK_RETURN:
+			OnBnClickedBtnEq();
+			bHandled = TRUE;
+			break;
+		case VK_ESCAPE:
+			OnBnClickedBtnClear();
+			bHandled = TRUE;
+			break;
+		case VK_BACK:
+			if (!m_strDisplay.IsEmpty() && !m_bNewNumber)
+			{
+				m_strDisplay.Delete(m_strDisplay.GetLength() - 1);
+				if (!m_strExpression.IsEmpty())
+					m_strExpression.Delete(m_strExpression.GetLength() - 1);
+				if (m_strDisplay.IsEmpty())
+					m_strDisplay = _T("0");
+				UpdateDisplay();
+				UpdateExpression();
+			}
+			bHandled = TRUE;
+			break;
+		case VK_OEM_PERIOD:
+		case '.':
+			OnBnClickedBtnDot();
+			bHandled = TRUE;
+			break;
+		case '=':
+			OnBnClickedBtnEq();
+			bHandled = TRUE;
+			break;
+		}
+	}
+
+	if (!bHandled)
+		CDialog::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
 
