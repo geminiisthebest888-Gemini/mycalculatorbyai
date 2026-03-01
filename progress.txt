@@ -24,3 +24,26 @@
 - `fce5d10` - Use OnKeyUp instead of timer for keyboard input
 - `868abe8` - Fix keyboard input with PreTranslateMessage
 - `62a36ac` - Move cursor to end of text
+
+### 2026-03-01
+
+#### Bug Fixes:
+1. **Memory leak** - Font created in OnInitDialog was never deleted
+   - Added `CFont* m_pFont` member variable
+   - Added destructor to delete the font
+2. **GDI+ shutdown** - Was called twice (in InitInstance and ExitInstance)
+   - Removed duplicate call from InitInstance
+3. **InitInstance return** - Returned FALSE after successful initialization
+   - Changed to return TRUE
+4. **Duplicate key handling** - Both ON_WM_KEYUP and PreTranslateMessage were handling keyboard input
+   - Removed ON_WM_KEYUP message map entry
+   - Removed redundant OnKeyUp handler
+   - Now only uses PreTranslateMessage for keyboard input
+5. **Shift+8** - Was treated as digit '8' instead of multiply operator
+   - Added check for Shift key state in HandleKeyDown
+
+#### New Files:
+- `CLAUDE.md` - Project guidance for Claude Code
+
+#### Commits Made:
+- `a9597e2` - Fix: memory leak, GDI+ shutdown, Shift+8, and keyboard handling
