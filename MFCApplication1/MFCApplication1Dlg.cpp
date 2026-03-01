@@ -405,6 +405,7 @@ void CMFCApplication1Dlg::AppendDigit(LPCTSTR szDigit)
 	if (m_bNewNumber)
 	{
 		m_strDisplay = szDigit;
+		m_strExpression = szDigit;
 		m_bNewNumber = FALSE;
 	}
 	else
