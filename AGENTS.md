@@ -274,3 +274,54 @@ Added VK_OEM_2 handling for forward slash key
 ### OEM Key Issues
 - **Problem**: Some keys (like `/` and `=`) not working
 - **Solution**: Use both virtual key codes (VK_DIVIDE) and OEM codes (VK_OEM_2)
+
+
+---
+
+## 7. Code Review Workflow
+
+### Using the Code Review Script
+
+Run the code review script to review changes:
+
+```powershell
+# Review uncommitted changes
+.\code-review.ps1
+
+# Review last commit
+.\code-review.ps1 HEAD~1
+
+# Review specific commit
+.\code-review.ps1 <commit-hash>
+
+# Review all commits since main branch
+.\code-review.ps1 main..HEAD
+```
+
+### Manual Code Review Steps
+
+1. **Check for uncommitted changes**
+   ```powershell
+   git status
+   git diff
+   ```
+
+2. **Review specific commit**
+   ```powershell
+   git show <commit>
+   git log -1 <commit>
+   ```
+
+3. **Compare branches**
+   ```powershell
+   git diff main..HEAD
+   git log main..HEAD --oneline
+   ```
+
+### What to Look For
+
+- **Bugs**: Logic errors, off-by-one mistakes, incorrect conditionals
+- **Edge cases**: Null/empty inputs, division by zero, overflow
+- **Security**: Input validation, data exposure
+- **Structure**: Follows existing patterns and conventions
+- **Behavior changes**: Unintentional modifications to existing functionality
