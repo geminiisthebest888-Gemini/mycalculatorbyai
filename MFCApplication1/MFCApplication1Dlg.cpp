@@ -370,12 +370,16 @@ void CMFCApplication1Dlg::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 void CMFCApplication1Dlg::UpdateDisplay()
 {
-	GetDlgItem(IDC_DISPLAY)->SetWindowText(m_strDisplay);
+	CEdit* pEdit = (CEdit*)GetDlgItem(IDC_DISPLAY);
+	pEdit->SetWindowText(m_strDisplay);
+	pEdit->SetSel(m_strDisplay.GetLength(), m_strDisplay.GetLength());
 }
 
 void CMFCApplication1Dlg::UpdateExpression()
 {
-	GetDlgItem(IDC_EXPRESSION)->SetWindowText(m_strExpression);
+	CEdit* pEdit = (CEdit*)GetDlgItem(IDC_EXPRESSION);
+	pEdit->SetWindowText(m_strExpression);
+	pEdit->SetSel(m_strExpression.GetLength(), m_strExpression.GetLength());
 }
 
 void CMFCApplication1Dlg::AppendDigit(LPCTSTR szDigit)
