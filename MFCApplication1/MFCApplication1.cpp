@@ -24,6 +24,7 @@ END_MESSAGE_MAP()
 CMFCApplication1App::CMFCApplication1App()
 {
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
+	m_gdiplusToken = 0;
 }
 
 
@@ -42,6 +43,14 @@ BOOL CMFCApplication1App::InitInstance()
 	InitCommonControlsEx(&InitCtrls);
 
 	CWinApp::InitInstance();
+
+	// Initialize GdiPlus
+	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+	gdiplusStartupInput.GdiplusVersion = 1;
+	gdiplusStartupInput.DebugEventCallback = NULL;
+	gdiplusStartupInput.SuppressBackgroundThread = FALSE;
+	gdiplusStartupInput.SuppressExternalCodecs = FALSE;
+	Gdiplus::GdiplusStartup(&m_gdiplusToken, &gdiplusStartupInput, NULL);
 
 	if (!AfxSocketInit())
 	{
@@ -73,5 +82,13 @@ BOOL CMFCApplication1App::InitInstance()
 	ControlBarCleanUp();
 #endif
 
+	Gdiplus::GdiplusShutdown(m_gdiplusToken);
+
 	return FALSE;
+}
+
+int CMFCApplication1App::ExitInstance()
+{
+	Gdiplus::GdiplusShutdown(m_gdiplusToken);
+	return CWinApp::ExitInstance();
 }

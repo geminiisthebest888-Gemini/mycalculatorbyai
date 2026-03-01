@@ -9,6 +9,7 @@
 #endif
 
 #include "resource.h"
+#include <GdiPlus.h>
 
 class CMFCApplication1App : public CWinApp
 {
@@ -17,8 +18,11 @@ public:
 
 public:
 	virtual BOOL InitInstance();
+	virtual int ExitInstance();
 
 	DECLARE_MESSAGE_MAP()
+
+	ULONG_PTR m_gdiplusToken;
 };
 
 extern CMFCApplication1App theApp;

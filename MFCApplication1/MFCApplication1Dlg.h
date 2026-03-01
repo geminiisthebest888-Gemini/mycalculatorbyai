@@ -4,6 +4,28 @@
 
 #pragma once
 
+#include <GdiPlus.h>
+using namespace Gdiplus;
+
+// Custom gradient button class
+class CGradientButton : public CButton
+{
+public:
+	CGradientButton();
+	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
+
+	BOOL m_bMouseOver;
+	BOOL m_bTracking;
+
+	TRACKMOUSEEVENT m_tme;
+
+protected:
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnMouseLeave();
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	DECLARE_MESSAGE_MAP()
+};
+
 
 // CMFCApplication1Dlg dialog
 class CMFCApplication1Dlg : public CDialog
@@ -27,6 +49,10 @@ protected:
 	double m_dwSecondOperand;
 	CString m_strOperation;
 	BOOL m_bNewNumber;
+
+	CGradientButton m_btn0, m_btn1, m_btn2, m_btn3, m_btn4;
+	CGradientButton m_btn5, m_btn6, m_btn7, m_btn8, m_btn9;
+	CGradientButton m_btnDot, m_btnAdd, m_btnSub, m_btnMul, m_btnDiv, m_btnEq, m_btnClear;
 
 	void UpdateDisplay();
 	void UpdateExpression();
