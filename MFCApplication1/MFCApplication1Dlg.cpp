@@ -172,6 +172,7 @@ CMFCApplication1Dlg::CMFCApplication1Dlg(CWnd* pParent /*=nullptr*/)
 	m_dwSecondOperand = 0;
 	m_strOperation = _T("");
 	m_bNewNumber = TRUE;
+	m_bInputLocked = FALSE;
 }
 
 void CMFCApplication1Dlg::DoDataExchange(CDataExchange* pDX)
@@ -296,6 +297,12 @@ HCURSOR CMFCApplication1Dlg::OnQueryDragIcon()
 
 void CMFCApplication1Dlg::OnTimer(UINT_PTR nIDEvent)
 {
+	if (m_bInputLocked)
+	{
+		CDialog::OnTimer(nIDEvent);
+		return;
+	}
+
 	short state;
 	bool shiftPressed = (GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0;
 
@@ -402,6 +409,8 @@ void CMFCApplication1Dlg::UpdateExpression()
 
 void CMFCApplication1Dlg::AppendDigit(LPCTSTR szDigit)
 {
+	m_bInputLocked = TRUE;
+
 	if (m_bNewNumber)
 	{
 		m_strDisplay = szDigit;
@@ -411,7 +420,10 @@ void CMFCApplication1Dlg::AppendDigit(LPCTSTR szDigit)
 	else
 	{
 		if (m_strDisplay == _T("0") && _tcscmp(szDigit, _T("0")) == 0)
+		{
+			m_bInputLocked = FALSE;
 			return;
+		}
 		if (m_strDisplay == _T("0"))
 			m_strDisplay = szDigit;
 		else
@@ -420,15 +432,21 @@ void CMFCApplication1Dlg::AppendDigit(LPCTSTR szDigit)
 	m_strExpression += szDigit;
 	UpdateDisplay();
 	UpdateExpression();
+
+	Sleep(50);
+	m_bInputLocked = FALSE;
 }
 
 void CMFCApplication1Dlg::SetOperation(LPCTSTR szOp)
 {
+	m_bInputLocked = TRUE;
 	m_dwFirstOperand = _tstof(m_strDisplay);
 	m_strOperation = szOp;
 	m_bNewNumber = TRUE;
 	m_strExpression += szOp;
 	UpdateExpression();
+	Sleep(50);
+	m_bInputLocked = FALSE;
 }
 
 
@@ -528,6 +546,7 @@ void CMFCApplication1Dlg::OnBnClickedBtn9() { AppendDigit(_T("9")); }
 
 void CMFCApplication1Dlg::OnBnClickedBtnDot()
 {
+	m_bInputLocked = TRUE;
 	if (m_bNewNumber)
 	{
 		m_strDisplay = _T("0.");
@@ -541,6 +560,8 @@ void CMFCApplication1Dlg::OnBnClickedBtnDot()
 	}
 	UpdateDisplay();
 	UpdateExpression();
+	Sleep(50);
+	m_bInputLocked = FALSE;
 }
 
 void CMFCApplication1Dlg::OnBnClickedBtnAdd() { SetOperation(_T("+")); }
@@ -550,8 +571,13 @@ void CMFCApplication1Dlg::OnBnClickedBtnDiv() { SetOperation(_T("/")); }
 
 void CMFCApplication1Dlg::OnBnClickedBtnEq()
 {
+	m_bInputLocked = TRUE;
+
 	if (m_strOperation.IsEmpty())
+	{
+		m_bInputLocked = FALSE;
 		return;
+	}
 
 	m_dwSecondOperand = _tstof(m_strDisplay);
 	double result = 0;
@@ -576,6 +602,7 @@ void CMFCApplication1Dlg::OnBnClickedBtnEq()
 			UpdateExpression();
 			m_strOperation = _T("");
 			m_bNewNumber = TRUE;
+			m_bInputLocked = FALSE;
 			return;
 		}
 	}
@@ -590,10 +617,14 @@ void CMFCApplication1Dlg::OnBnClickedBtnEq()
 	m_bNewNumber = TRUE;
 	UpdateDisplay();
 	UpdateExpression();
+
+	Sleep(50);
+	m_bInputLocked = FALSE;
 }
 
 void CMFCApplication1Dlg::OnBnClickedBtnClear()
 {
+	m_bInputLocked = TRUE;
 	m_strDisplay = _T("0");
 	m_strExpression = _T("");
 	m_dwFirstOperand = 0;
@@ -602,4 +633,6 @@ void CMFCApplication1Dlg::OnBnClickedBtnClear()
 	m_bNewNumber = TRUE;
 	UpdateDisplay();
 	UpdateExpression();
+	Sleep(50);
+	m_bInputLocked = FALSE;
 }
