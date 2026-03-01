@@ -183,7 +183,6 @@ void CMFCApplication1Dlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CMFCApplication1Dlg, CDialog)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_WM_TIMER()
 	ON_WM_KEYUP()
 	ON_BN_CLICKED(IDC_BTN0, &CMFCApplication1Dlg::OnBnClickedBtn0)
 	ON_BN_CLICKED(IDC_BTN1, &CMFCApplication1Dlg::OnBnClickedBtn1)
@@ -257,8 +256,6 @@ BOOL CMFCApplication1Dlg::OnInitDialog()
 
 	SetFocus();
 
-	SetTimer(1, 100, NULL);
-
 	return FALSE;
 }
 
@@ -296,104 +293,6 @@ HCURSOR CMFCApplication1Dlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-void CMFCApplication1Dlg::OnTimer(UINT_PTR nIDEvent)
-{
-	short state;
-	bool shiftPressed = (GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0;
-
-	state = GetAsyncKeyState('0');
-	if (state & 0x8000) { AppendDigit(_T("0")); }
-
-	state = GetAsyncKeyState('1');
-	if (state & 0x8000) { AppendDigit(_T("1")); }
-
-	state = GetAsyncKeyState('2');
-	if (state & 0x8000) { AppendDigit(_T("2")); }
-
-	state = GetAsyncKeyState('3');
-	if (state & 0x8000) { AppendDigit(_T("3")); }
-
-	state = GetAsyncKeyState('4');
-	if (state & 0x8000) { AppendDigit(_T("4")); }
-
-	state = GetAsyncKeyState('5');
-	if (state & 0x8000) { AppendDigit(_T("5")); }
-
-	state = GetAsyncKeyState('6');
-	if (state & 0x8000) { AppendDigit(_T("6")); }
-
-	state = GetAsyncKeyState('7');
-	if (state & 0x8000) { AppendDigit(_T("7")); }
-
-	state = GetAsyncKeyState('8');
-	if (state & 0x8000) { 
-		if (shiftPressed)
-			SetOperation(_T("*"));
-		else
-			AppendDigit(_T("8"));
-	}
-
-	state = GetAsyncKeyState('9');
-	if (state & 0x8000) { AppendDigit(_T("9")); }
-
-	state = GetAsyncKeyState(VK_OEM_PLUS);
-	if (state & 0x8000) { 
-		if (shiftPressed)
-			SetOperation(_T("+"));
-		else
-			OnBnClickedBtnEq();
-	}
-
-	state = GetAsyncKeyState(VK_OEM_MINUS);
-	if (state & 0x8000) { SetOperation(_T("-")); }
-
-	state = GetAsyncKeyState(VK_OEM_5);
-	if (state & 0x8000) { SetOperation(_T("/")); }
-
-	state = GetAsyncKeyState(VK_ADD);
-	if (state & 0x8000) { SetOperation(_T("+")); }
-
-	state = GetAsyncKeyState(VK_SUBTRACT);
-	if (state & 0x8000) { SetOperation(_T("-")); }
-
-	state = GetAsyncKeyState(VK_MULTIPLY);
-	if (state & 0x8000) { SetOperation(_T("*")); }
-
-	state = GetAsyncKeyState(VK_DIVIDE);
-	if (state & 0x8000) { SetOperation(_T("/")); }
-
-	state = GetAsyncKeyState(VK_OEM_2);
-	if (state & 0x8000) { SetOperation(_T("/")); }
-
-	state = GetAsyncKeyState(VK_RETURN);
-	if (state & 0x8000) { OnBnClickedBtnEq(); }
-
-	state = GetAsyncKeyState(VK_ESCAPE);
-	if (state & 0x8000) { OnBnClickedBtnClear(); }
-
-	state = GetAsyncKeyState(VK_BACK);
-	if (state & 0x8000) {
-		if (!m_strDisplay.IsEmpty() && !m_bNewNumber)
-		{
-			m_strDisplay.Delete(m_strDisplay.GetLength() - 1);
-			if (!m_strExpression.IsEmpty())
-				m_strExpression.Delete(m_strExpression.GetLength() - 1);
-			if (m_strDisplay.IsEmpty())
-				m_strDisplay = _T("0");
-			UpdateDisplay();
-			UpdateExpression();
-		}
-	}
-
-	state = GetAsyncKeyState(VK_OEM_PERIOD);
-	if (state & 0x8000) { OnBnClickedBtnDot(); }
-
-	state = GetAsyncKeyState('=');
-	if (state & 0x8000) { OnBnClickedBtnEq(); }
-
-	CDialog::OnTimer(nIDEvent);
-}
-
 void CMFCApplication1Dlg::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
 	BOOL bHandled = FALSE;
@@ -410,10 +309,12 @@ void CMFCApplication1Dlg::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 		switch (nChar)
 		{
 		case VK_ADD:
+		case VK_OEM_PLUS:
 			SetOperation(_T("+"));
 			bHandled = TRUE;
 			break;
 		case VK_SUBTRACT:
+		case VK_OEM_MINUS:
 		case '-':
 			SetOperation(_T("-"));
 			bHandled = TRUE;
@@ -424,6 +325,7 @@ void CMFCApplication1Dlg::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 			bHandled = TRUE;
 			break;
 		case VK_DIVIDE:
+		case VK_OEM_2:
 		case '/':
 			SetOperation(_T("/"));
 			bHandled = TRUE;
@@ -523,6 +425,7 @@ void CMFCApplication1Dlg::SetOperation(LPCTSTR szOp)
 LRESULT CMFCApplication1Dlg::HandleKeyDown(WPARAM wParam)
 {
 	BOOL bHandled = FALSE;
+	bool shiftPressed = (GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0;
 
 	if (wParam >= '0' && wParam <= '9')
 	{
@@ -540,6 +443,7 @@ LRESULT CMFCApplication1Dlg::HandleKeyDown(WPARAM wParam)
 			bHandled = TRUE;
 			break;
 		case VK_SUBTRACT:
+		case VK_OEM_MINUS:
 		case '-':
 			SetOperation(_T("-"));
 			bHandled = TRUE;
@@ -550,8 +454,16 @@ LRESULT CMFCApplication1Dlg::HandleKeyDown(WPARAM wParam)
 			bHandled = TRUE;
 			break;
 		case VK_DIVIDE:
+		case VK_OEM_2:
 		case '/':
 			SetOperation(_T("/"));
+			bHandled = TRUE;
+			break;
+		case VK_OEM_PLUS:
+			if (shiftPressed)
+				SetOperation(_T("+"));
+			else
+				OnBnClickedBtnEq();
 			bHandled = TRUE;
 			break;
 		case VK_RETURN:
@@ -600,6 +512,16 @@ LRESULT CMFCApplication1Dlg::WindowProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			return 1;
 	}
 	return CDialog::WindowProc(msg, wParam, lParam);
+}
+
+BOOL CMFCApplication1Dlg::PreTranslateMessage(MSG* pMsg)
+{
+	if (pMsg->message == WM_KEYDOWN)
+	{
+		HandleKeyDown(pMsg->wParam);
+		return TRUE;
+	}
+	return CDialog::PreTranslateMessage(pMsg);
 }
 
 

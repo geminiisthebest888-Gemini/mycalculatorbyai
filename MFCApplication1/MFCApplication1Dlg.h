@@ -61,8 +61,8 @@ protected:
 	void SetOperation(LPCTSTR szOp);
 	LRESULT HandleKeyDown(WPARAM wParam);
 	LRESULT WindowProc(UINT msg, WPARAM wParam, LPARAM lParam);
-	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
 	virtual BOOL OnInitDialog();
 	virtual void OnOK();
