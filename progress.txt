@@ -1,0 +1,26 @@
+## Summary of Today
+
+### Features Implemented:
+1. **Gradient buttons** - Light blue to darker blue gradient with rounded rectangles
+2. **After-equals behavior** - When user enters a number/operator after pressing `=`, the result clears and starts fresh
+   - Added `m_bAfterEquals` flag to track this state
+3. **Cursor positioning** - Cursor now appears at the end of the display/expression fields
+
+### Bug Fixes:
+1. **Keyboard input** - Replaced timer-based polling with `PreTranslateMessage` for keyboard handling
+2. **Duplicate input** - Fixed issue where pressing a key once registered twice
+3. **Divide key** - Fixed `/` key not working by adding `VK_OEM_2`
+4. **Equals key** - Fixed `=` being treated as `+` by checking Shift key state
+
+### Code Changes:
+- Removed `SetTimer` and `ON_WM_TIMER` 
+- Added `PreTranslateMessage` and `HandleKeyDown` for keyboard input
+- Added `m_bAfterEquals` flag to track state after equals
+- Added `SetSel()` to position cursor at end of text
+
+### Commits Made:
+- `54a3d50` - Fix gradient buttons
+- `527b991` - Fix: clear display after equals, add m_bAfterEquals flag, fix keyboard divide key
+- `fce5d10` - Use OnKeyUp instead of timer for keyboard input
+- `868abe8` - Fix keyboard input with PreTranslateMessage
+- `62a36ac` - Move cursor to end of text

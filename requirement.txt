@@ -1,0 +1,25 @@
+## Calculator App Requirements
+
+### Core Functionality:
+- Basic calculator with +, -, *, / operations
+- Support both button clicks and keyboard input
+- Display shows current number and result
+- Expression shows the full operation (e.g., "3+3=6")
+
+### UI Requirements:
+- Windows MFC application
+- Gradient buttons (light blue → darker blue on hover)
+- Rounded rectangle buttons
+- 24pt bold font
+
+### Behavior Requirements:
+1. **Button input** - Click buttons to input numbers and operators
+2. **Keyboard input** - Numbers 0-9, operators + - * /, =, Enter, Escape (clear), Backspace
+3. **After equals** - When user inputs a number/operator after pressing =, clear the result and start fresh
+4. **Cursor position** - Cursor should be at the end of display/expression fields
+
+### Known Issues Resolved:
+- Duplicate key detection when using timer polling
+- Timer removed, using PreTranslateMessage instead
+- Divide key (/) not working - fixed with VK_OEM_2
+- Equals key (=) being treated as + - fixed by checking Shift state
