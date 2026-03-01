@@ -172,6 +172,7 @@ CMFCApplication1Dlg::CMFCApplication1Dlg(CWnd* pParent /*=nullptr*/)
 	m_dwSecondOperand = 0;
 	m_strOperation = _T("");
 	m_bNewNumber = TRUE;
+	m_bAfterEquals = FALSE;
 }
 
 void CMFCApplication1Dlg::DoDataExchange(CDataExchange* pDX)
@@ -360,6 +361,9 @@ void CMFCApplication1Dlg::OnTimer(UINT_PTR nIDEvent)
 	state = GetAsyncKeyState(VK_DIVIDE);
 	if (state & 0x8000) { SetOperation(_T("/")); }
 
+	state = GetAsyncKeyState(VK_OEM_2);
+	if (state & 0x8000) { SetOperation(_T("/")); }
+
 	state = GetAsyncKeyState(VK_RETURN);
 	if (state & 0x8000) { OnBnClickedBtnEq(); }
 
@@ -402,10 +406,18 @@ void CMFCApplication1Dlg::UpdateExpression()
 
 void CMFCApplication1Dlg::AppendDigit(LPCTSTR szDigit)
 {
-	if (m_bNewNumber)
+	if (m_bAfterEquals)
+	{
+		m_strDisplay = szDigit;
+		m_strExpression = szDigit;
+		m_bAfterEquals = FALSE;
+		m_bNewNumber = FALSE;
+	}
+	else if (m_bNewNumber)
 	{
 		m_strDisplay = szDigit;
 		m_bNewNumber = FALSE;
+		m_strExpression += szDigit;
 	}
 	else
 	{
@@ -415,17 +427,22 @@ void CMFCApplication1Dlg::AppendDigit(LPCTSTR szDigit)
 			m_strDisplay = szDigit;
 		else
 			m_strDisplay += szDigit;
+		m_strExpression += szDigit;
 	}
-	m_strExpression += szDigit;
 	UpdateDisplay();
 	UpdateExpression();
 }
 
 void CMFCApplication1Dlg::SetOperation(LPCTSTR szOp)
 {
+	if (m_bAfterEquals)
+	{
+		m_strExpression = m_strDisplay;
+	}
 	m_dwFirstOperand = _tstof(m_strDisplay);
 	m_strOperation = szOp;
 	m_bNewNumber = TRUE;
+	m_bAfterEquals = FALSE;
 	m_strExpression += szOp;
 	UpdateExpression();
 }
@@ -527,7 +544,14 @@ void CMFCApplication1Dlg::OnBnClickedBtn9() { AppendDigit(_T("9")); }
 
 void CMFCApplication1Dlg::OnBnClickedBtnDot()
 {
-	if (m_bNewNumber)
+	if (m_bAfterEquals)
+	{
+		m_strDisplay = _T("0.");
+		m_strExpression = _T("0.");
+		m_bAfterEquals = FALSE;
+		m_bNewNumber = FALSE;
+	}
+	else if (m_bNewNumber)
 	{
 		m_strDisplay = _T("0.");
 		m_strExpression += _T("0.");
@@ -587,6 +611,7 @@ void CMFCApplication1Dlg::OnBnClickedBtnEq()
 	m_strDisplay = strResult;
 	m_strOperation = _T("");
 	m_bNewNumber = TRUE;
+	m_bAfterEquals = TRUE;
 	UpdateDisplay();
 	UpdateExpression();
 }
@@ -599,6 +624,7 @@ void CMFCApplication1Dlg::OnBnClickedBtnClear()
 	m_dwSecondOperand = 0;
 	m_strOperation = _T("");
 	m_bNewNumber = TRUE;
+	m_bAfterEquals = FALSE;
 	UpdateDisplay();
 	UpdateExpression();
 }

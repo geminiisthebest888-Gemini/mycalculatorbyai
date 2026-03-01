@@ -49,6 +49,7 @@ protected:
 	double m_dwSecondOperand;
 	CString m_strOperation;
 	BOOL m_bNewNumber;
+	BOOL m_bAfterEquals;
 
 	CGradientButton m_btn0, m_btn1, m_btn2, m_btn3, m_btn4;
 	CGradientButton m_btn5, m_btn6, m_btn7, m_btn8, m_btn9;
