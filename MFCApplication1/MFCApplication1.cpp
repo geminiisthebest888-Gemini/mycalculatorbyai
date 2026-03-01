@@ -82,9 +82,7 @@ BOOL CMFCApplication1App::InitInstance()
 	ControlBarCleanUp();
 #endif
 
-	Gdiplus::GdiplusShutdown(m_gdiplusToken);
-
-	return FALSE;
+	return TRUE;
 }
 
 int CMFCApplication1App::ExitInstance()

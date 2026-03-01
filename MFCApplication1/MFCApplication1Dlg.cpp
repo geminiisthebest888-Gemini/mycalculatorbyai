@@ -166,6 +166,7 @@ CMFCApplication1Dlg::CMFCApplication1Dlg(CWnd* pParent /*=nullptr*/)
 	: CDialog(IDD_MFCAPPLICATION1_DIALOG, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	m_pFont = nullptr;
 	m_strDisplay = _T("0");
 	m_strExpression = _T("");
 	m_dwFirstOperand = 0;
@@ -183,7 +184,6 @@ void CMFCApplication1Dlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CMFCApplication1Dlg, CDialog)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_WM_KEYUP()
 	ON_BN_CLICKED(IDC_BTN0, &CMFCApplication1Dlg::OnBnClickedBtn0)
 	ON_BN_CLICKED(IDC_BTN1, &CMFCApplication1Dlg::OnBnClickedBtn1)
 	ON_BN_CLICKED(IDC_BTN2, &CMFCApplication1Dlg::OnBnClickedBtn2)
@@ -214,8 +214,8 @@ BOOL CMFCApplication1Dlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);
 
 	// Set font size to 24 for all buttons
-	CFont* pFont = new CFont();
-	pFont->CreateFont(24, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
+	m_pFont = new CFont();
+	m_pFont->CreateFont(24, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
 		DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
 		DEFAULT_QUALITY, DEFAULT_PITCH | FF_SWISS, _T("Arial"));
 
@@ -225,7 +225,7 @@ BOOL CMFCApplication1Dlg::OnInitDialog()
 		IDC_BTN_EQ, IDC_BTN_CLEAR };
 	for (int i = 0; i < 17; i++)
 	{
-		GetDlgItem(btnIds[i])->SetFont(pFont);
+		GetDlgItem(btnIds[i])->SetFont(m_pFont);
 	}
 
 	// Subclass buttons to use gradient style
@@ -248,8 +248,8 @@ BOOL CMFCApplication1Dlg::OnInitDialog()
 	m_btnClear.SubclassDlgItem(IDC_BTN_CLEAR, this);
 
 	// Also set font for display edit boxes
-	GetDlgItem(IDC_DISPLAY)->SetFont(pFont);
-	GetDlgItem(IDC_EXPRESSION)->SetFont(pFont);
+	GetDlgItem(IDC_DISPLAY)->SetFont(m_pFont);
+	GetDlgItem(IDC_EXPRESSION)->SetFont(m_pFont);
 
 	UpdateDisplay();
 	UpdateExpression();
@@ -266,6 +266,15 @@ void CMFCApplication1Dlg::OnOK()
 void CMFCApplication1Dlg::OnCancel()
 {
 	CDialog::OnCancel();
+}
+
+CMFCApplication1Dlg::~CMFCApplication1Dlg()
+{
+	if (m_pFont)
+	{
+		delete m_pFont;
+		m_pFont = nullptr;
+	}
 }
 
 void CMFCApplication1Dlg::OnPaint()
@@ -291,80 +300,6 @@ void CMFCApplication1Dlg::OnPaint()
 HCURSOR CMFCApplication1Dlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
-}
-
-void CMFCApplication1Dlg::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
-{
-	BOOL bHandled = FALSE;
-
-	if (nChar >= '0' && nChar <= '9')
-	{
-		CString szDigit;
-		szDigit.Format(_T("%c"), nChar);
-		AppendDigit(szDigit);
-		bHandled = TRUE;
-	}
-	else
-	{
-		switch (nChar)
-		{
-		case VK_ADD:
-		case VK_OEM_PLUS:
-			SetOperation(_T("+"));
-			bHandled = TRUE;
-			break;
-		case VK_SUBTRACT:
-		case VK_OEM_MINUS:
-		case '-':
-			SetOperation(_T("-"));
-			bHandled = TRUE;
-			break;
-		case VK_MULTIPLY:
-		case '*':
-			SetOperation(_T("*"));
-			bHandled = TRUE;
-			break;
-		case VK_DIVIDE:
-		case VK_OEM_2:
-		case '/':
-			SetOperation(_T("/"));
-			bHandled = TRUE;
-			break;
-		case VK_RETURN:
-			OnBnClickedBtnEq();
-			bHandled = TRUE;
-			break;
-		case VK_ESCAPE:
-			OnBnClickedBtnClear();
-			bHandled = TRUE;
-			break;
-		case VK_BACK:
-			if (!m_strDisplay.IsEmpty() && !m_bNewNumber)
-			{
-				m_strDisplay.Delete(m_strDisplay.GetLength() - 1);
-				if (!m_strExpression.IsEmpty())
-					m_strExpression.Delete(m_strExpression.GetLength() - 1);
-				if (m_strDisplay.IsEmpty())
-					m_strDisplay = _T("0");
-				UpdateDisplay();
-				UpdateExpression();
-			}
-			bHandled = TRUE;
-			break;
-		case VK_OEM_PERIOD:
-		case '.':
-			OnBnClickedBtnDot();
-			bHandled = TRUE;
-			break;
-		case '=':
-			OnBnClickedBtnEq();
-			bHandled = TRUE;
-			break;
-		}
-	}
-
-	if (!bHandled)
-		CDialog::OnKeyUp(nChar, nRepCnt, nFlags);
 }
 
 
@@ -433,10 +368,19 @@ LRESULT CMFCApplication1Dlg::HandleKeyDown(WPARAM wParam)
 
 	if (wParam >= '0' && wParam <= '9')
 	{
-		CString szDigit;
-		szDigit.Format(_T("%c"), wParam);
-		AppendDigit(szDigit);
-		bHandled = TRUE;
+		// Handle Shift+8 as multiply (*)
+		if (wParam == '8' && shiftPressed)
+		{
+			SetOperation(_T("*"));
+			bHandled = TRUE;
+		}
+		else
+		{
+			CString szDigit;
+			szDigit.Format(_T("%c"), wParam);
+			AppendDigit(szDigit);
+			bHandled = TRUE;
+		}
 	}
 	else
 	{

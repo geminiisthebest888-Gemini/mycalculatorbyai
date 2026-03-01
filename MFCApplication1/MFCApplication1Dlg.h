@@ -32,6 +32,7 @@ class CMFCApplication1Dlg : public CDialog
 {
 public:
 	CMFCApplication1Dlg(CWnd* pParent = nullptr);
+	virtual ~CMFCApplication1Dlg();
 
 // Dialog Data
 #ifdef AFX_DESIGN_TIME
@@ -43,6 +44,7 @@ protected:
 
 protected:
 	HICON m_hIcon;
+	CFont* m_pFont;
 	CString m_strDisplay;
 	CString m_strExpression;
 	double m_dwFirstOperand;
@@ -61,7 +63,6 @@ protected:
 	void SetOperation(LPCTSTR szOp);
 	LRESULT HandleKeyDown(WPARAM wParam);
 	LRESULT WindowProc(UINT msg, WPARAM wParam, LPARAM lParam);
-	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
 	virtual BOOL OnInitDialog();
